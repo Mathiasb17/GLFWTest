@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <iostream>
 
 glm::vec3 points[3];
 
@@ -19,7 +20,7 @@ int main(void)
 		return 1;
 	} 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	GLFWwindow* window = glfwCreateWindow(640, 480, "Hello Triangle", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(640, 480, "Hello Spheres", NULL, NULL);
 	if (!window)
 	{
 		fprintf(stderr, "ERROR: could not open window with GLFW3\n");
@@ -42,9 +43,9 @@ int main(void)
 	glEnable(GL_DEPTH_TEST); // enable depth-testing
 	glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
 
-	points[0] = glm::vec3(0,0,0);
-	points[1] = glm::vec3(0,1,0);
-	points[2] = glm::vec3(0.5,0,0);
+	points[0] = glm::vec3(0,-0.5,0);
+	points[1] = glm::vec3(0,0.5,0);
+	points[2] = glm::vec3(0.5,-0.5,0);
 
 	GLuint vbo = 0;
 	glGenBuffers(1, &vbo);
@@ -61,6 +62,7 @@ int main(void)
 		"#version 400\n"
 		"in vec3 vp;"
 		"void main() {"
+		"  gl_PointSize = abs(vp.x+2)*15;"
 		"  gl_Position = vec4(vp, 1.0);"
 		"}";
 
@@ -68,8 +70,18 @@ int main(void)
 		"#version 400\n"
 		"out vec4 frag_colour;"
 		"void main() {"
-		"  frag_colour = vec4(1.0, 0.5, 0.2, 1.0);"
-		"}";
+		"if(dot(gl_PointCoord-0.5,gl_PointCoord-0.5)>0.25) "
+			"discard;"
+		"else"
+			"{"
+			"vec3 lightDir = vec3(0.3,0.3,0.9);"
+			"vec3 N;"
+			"N.xy = gl_PointCoord* 2.0 - vec2(1.0);"
+			"float mag = dot(N.xy, N.xy);"
+			"N.z = sqrt(1.0-mag);"
+			"float diffuse = max(0.0, dot(lightDir, N));"
+			"frag_colour = vec4(1.0, 0.0, 0.0, 1.0)*diffuse;}"
+			"}";
 
 	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vs, 1, &vertex_shader, NULL);
@@ -83,7 +95,11 @@ int main(void)
 	glAttachShader(shader_programme, vs);
 	glLinkProgram(shader_programme);
 
-	glPointSize(5);
+	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+	glEnable(GL_POINT_SPRITE);
+	glEnable(GL_SMOOTH);
+
+	glClearColor(1,1,1,1);
 
 	while(!glfwWindowShouldClose(window)) {
 		// wipe the drawing surface clear
@@ -91,7 +107,7 @@ int main(void)
 		glUseProgram(shader_programme);
 		glBindVertexArray(vao);
 		// draw points 0-3 from the currently bound VAO with current in-use shader
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_POINTS, 0, 3);
 		// update other events like input handling 
 		glfwPollEvents();
 		// put the stuff we've been drawing onto the display
