@@ -98,6 +98,7 @@ int main(void)
 	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 	glEnable(GL_POINT_SPRITE);
 	glEnable(GL_SMOOTH);
+	glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
 
 	glClearColor(1,1,1,1);
 
