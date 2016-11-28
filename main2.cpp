@@ -45,7 +45,7 @@ int main(void)
 
 	points[0] = glm::vec3(0,-0.5,0);
 	points[1] = glm::vec3(0,0.5,0);
-	points[2] = glm::vec3(0.5,-0.5,0);
+	points[2] = glm::vec3(0.5,-0.5,-1);
 
 	GLuint vbo = 0;
 	glGenBuffers(1, &vbo);
@@ -68,12 +68,13 @@ int main(void)
 
 	const char* fragment_shader =
 		"#version 400\n"
+		"const float PI = 3.1415926535897932384626433832795;"
 		"out vec4 frag_colour;"
 		"void main() {"
 		"if(dot(gl_PointCoord-0.5,gl_PointCoord-0.5)>0.25) "
 			"discard;"
 		"else"
-			"{"
+		"{"
 			"vec3 lightDir = vec3(0.3,0.3,0.9);"
 			"vec3 N;"
 			"N.xy = gl_PointCoord* 2.0 - vec2(1.0);"
@@ -81,7 +82,7 @@ int main(void)
 			"N.z = sqrt(1.0-mag);"
 			"float diffuse = max(0.0, dot(lightDir, N));"
 			"frag_colour = vec4(1.0, 0.0, 0.0, 1.0)*diffuse;}"
-			"}";
+		"}";
 
 	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vs, 1, &vertex_shader, NULL);
@@ -101,6 +102,7 @@ int main(void)
 	glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
 
 	glClearColor(1,1,1,1);
+	glm::mat4 m(1);
 
 	while(!glfwWindowShouldClose(window)) {
 		// wipe the drawing surface clear
