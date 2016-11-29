@@ -19,6 +19,7 @@ GLFWwindow* window;
 glm::vec3 points[8];
 
 glm::vec3 cube_points[8];
+unsigned int cube_indices[36];
 
 int width = 1024;
 int height = 768;
@@ -36,6 +37,8 @@ GLuint vbo_cube, vao_cube_pos, vao_cube_indices;
 GLuint vs_sphere, fs_sphere, vs_basic, fs_basic;
 
 GLuint shader_program_spheres, shader_program_basic;
+
+glm::mat4 mvp;
 
 /**********************************************************************
  *                           BASIC SHADERS                            *
@@ -91,6 +94,36 @@ const char * fragment_shader_basic =
  *                       SOME HELPER FUNCTIONS                        *
  **********************************************************************/
 
+void initSpheres()
+{
+	//left face
+	points[0] = glm::vec3(-1,-1,0);
+	points[1] = glm::vec3(-1,1,0);
+	points[2] = glm::vec3(-1.4,-1,-1);
+	points[3] = glm::vec3(-1.4,1,-1);
+
+	//right face
+	points[4] = glm::vec3(1,-1,0);
+	points[5] = glm::vec3(1,1,0);
+	points[6] = glm::vec3(1.4,-1,-1);
+	points[7] = glm::vec3(1.4,1,-1);
+}
+
+void initCube()
+{
+	//face gauche
+	cube_points[0] = glm::vec3(-1,-1,0);
+	cube_points[1] = glm::vec3(-1,-1,-1);
+	cube_points[2] = glm::vec3(-1,1,-1);
+	cube_points[3] = glm::vec3(-1,1,0);
+
+	//face droite
+	cube_points[4] = glm::vec3(1,-1,0);
+	cube_points[5] = glm::vec3(1,-1,-1);
+	cube_points[6] = glm::vec3(1,1,-1);
+	cube_points[7] = glm::vec3(1,1,0);
+}
+
 void initWindow()
 {
 	if (!glfwInit())
@@ -130,7 +163,7 @@ void glEnableCapabilities()
 	glClearColor(1,1,1,1);
 }
 
-void  getNewVbo(GLuint *newVbo, unsigned int bufferSize, const GLvoid* data, GLenum usage)
+void getNewVbo(GLuint *newVbo, unsigned int bufferSize, const GLvoid* data, GLenum usage)
 {
 	glGenBuffers(1, newVbo);
 	glBindBuffer(GL_ARRAY_BUFFER, *newVbo);
@@ -165,6 +198,25 @@ void compileShaderProgram(GLuint *sp, GLuint vs, GLuint fs)
 	glLinkProgram(*sp);
 }
 
+void displaySpheres(glm::mat4 mat_mvp, GLuint shader_program, GLuint vao_pos)
+{
+	glUseProgram(shader_program);
+	glBindVertexArray(vao_pos);
+
+	glUniform1f(glGetUniformLocation(shader_program, "pointScale"), height / tanf(45.f*0.5f*(float)M_PI/180.0f));
+	glUniform1f(glGetUniformLocation(shader_program, "pointRadius"), particle_radius);
+	glUniformMatrix4fv(glGetUniformLocation(shader_program, "MVP"), 1, false, glm::value_ptr(mat_mvp));
+	glDrawArrays(GL_POINTS, 0, 8); //TODO : replace 8 by a variable size
+
+	glUseProgram(0);
+}
+
+void displayCube(glm::mat4 mat_mvp, GLuint shader_program, GLuint vao_pos)
+{
+	glUseProgram(shader_program);
+	glUseProgram(0);
+}
+
 /**********************************************************************
  *                            MAIN PROGRAM                            *
  **********************************************************************/
@@ -174,18 +226,8 @@ int main(void)
 	//call to helper functions
 	initWindow();
 	glEnableCapabilities();
-
-	//face gauche
-	points[0] = glm::vec3(-1,-1,0);
-	points[1] = glm::vec3(-1,1,0);
-	points[2] = glm::vec3(-1.4,-1,-1);
-	points[3] = glm::vec3(-1.4,1,-1);
-
-	//face droite
-	points[4] = glm::vec3(1,-1,0);
-	points[5] = glm::vec3(1,1,0);
-	points[6] = glm::vec3(1.4,-1,-1);
-	points[7] = glm::vec3(1.4,1,-1);
+	initSpheres();
+	initCube();
 
 	//opengl sphere buffers handling
 	getNewVbo(&vbo_spheres, 8 * sizeof(glm::vec3), points, GL_STATIC_DRAW);
@@ -194,6 +236,8 @@ int main(void)
 	//shaders handling
 	compileVertexAndFragmentShaders(&vs_sphere, &fs_sphere, &vertex_shader_spheres, &fragment_shader_spheres);
 	compileShaderProgram(&shader_program_spheres, vs_sphere, fs_sphere);
+	compileVertexAndFragmentShaders(&vs_basic, &fs_basic, &vertex_shader_basic, &fragment_shader_basic);
+	compileShaderProgram(&shader_program_basic, vs_basic, fs_basic);
 
 	while(!glfwWindowShouldClose(window))
 	{
@@ -204,18 +248,12 @@ int main(void)
 		glm::mat4 m(1.f);
 		glm::mat4 v = glm::lookAt(glm::vec3(0,0,5), glm::vec3(0,0,0), glm::vec3(0,1,0));
 		glm::mat4 p = glm::perspective(45.f,(float)width/float(height), -1.0f, 100.f);
-		glm::mat4 mvp = p*v*m;
+		mvp = p*v*m;
 
 		//step 3 : display spheres in associated shader program
-		glUseProgram(shader_program_spheres);
-		glBindVertexArray(vao_spheres_pos);
+		displaySpheres(mvp, shader_program_spheres, vao_spheres_pos);
 
-		glUniform1f(glGetUniformLocation(shader_program_spheres, "pointScale"), height / tanf(45.f*0.5f*(float)M_PI/180.0f));
-		glUniform1f(glGetUniformLocation(shader_program_spheres, "pointRadius"), particle_radius);
-		glUniformMatrix4fv(glGetUniformLocation(shader_program_spheres, "MVP"), 1, false, glm::value_ptr(mvp));
-		glDrawArrays(GL_POINTS, 0, 8);
-
-		//step 4 : same thing for cube
+		//step 4 : display cube in associated shader program
 
 		//last step : read new events if some
 		glfwPollEvents();
