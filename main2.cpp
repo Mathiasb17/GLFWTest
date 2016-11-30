@@ -83,7 +83,7 @@ const char * fragment_shader_basic =
  **********************************************************************/
 
 float particle_radius = 0.1;
-glm::vec3 sphere_points[8]; glm::vec3 cube_points[36]; glm::vec3 cube_colors[36];
+glm::vec3 sphere_points[8]; glm::vec3 cube_points[8];glm::vec3 cube_colors[8]; unsigned int cube_indices[36];
 
 void initSpheres()
 {
@@ -98,55 +98,48 @@ void initSpheres()
 
 void initCube()
 {
-	//left face
-	cube_points[0] = glm::vec3(-1,-1,1); cube_points[1] = glm::vec3(-1,-1,-1); cube_points[2] = glm::vec3(-1,1,-1);
-	cube_points[3] = glm::vec3(-1,-1,1); cube_points[4] = glm::vec3(-1,1,1); cube_points[5] = glm::vec3(-1,1,-1);
+	cube_points[0] = glm::vec3(-0.5,-0.5,0.5);
+	cube_points[1] = glm::vec3(-0.5,-0.5,-0.5);
+	cube_points[2] = glm::vec3(-0.5,0.5,-0.5);
+	cube_points[3] = glm::vec3(-0.5,0.5,0.5);
+	cube_points[4] = glm::vec3(0.5,-0.5,0.5);
+	cube_points[5] = glm::vec3(0.5,-0.5,-0.5);
+	cube_points[6] = glm::vec3(0.5,0.5,-0.5);
+	cube_points[7] = glm::vec3(0.5,0.5,0.5);
+
+	cube_colors[0] = glm::vec3(1,0,0);
+	cube_colors[1] = glm::vec3(1,0,0);
+	cube_colors[2] = glm::vec3(0,1,0);
+	cube_colors[3] = glm::vec3(0,1,0);
+	cube_colors[4] = glm::vec3(0,0,1);
+	cube_colors[5] = glm::vec3(0,0,1);
+	cube_colors[6] = glm::vec3(1,0,0);
+	cube_colors[7] = glm::vec3(1,0,0);
+
+	//front
+	cube_indices[0] = 0; cube_indices[1] = 4; cube_indices[2] = 3;
+	cube_indices[3] = 4; cube_indices[4] = 3; cube_indices[5] = 7;
+
+	//back
+	cube_indices[6] = 1; cube_indices[7] = 5; cube_indices[8] = 2;
+	cube_indices[9] = 5; cube_indices[10] = 2; cube_indices[11] = 6;
+
+	//left
+	cube_indices[12] = 0; cube_indices[13] = 1; cube_indices[14] = 2;
+	cube_indices[15] = 0; cube_indices[16] = 2; cube_indices[17] = 3;
+
+	//right
+	cube_indices[18] = 4; cube_indices[19] = 5; cube_indices[20] = 6;
+	cube_indices[21] = 4; cube_indices[22] = 6; cube_indices[23] = 7;
+
+	//top
+	cube_indices[24] = 3; cube_indices[25] = 7; cube_indices[26] = 6;
+	cube_indices[27] = 3; cube_indices[28] = 6; cube_indices[29] = 2;
+
+	//bottom
+	cube_indices[30] = 0; cube_indices[31] = 4; cube_indices[32] = 5;
+	cube_indices[33] = 0; cube_indices[34] = 5; cube_indices[35] = 1;
 	
-	//right face
-	cube_points[6] = glm::vec3(1,-1,1); cube_points[7] = glm::vec3(1,-1,-1); cube_points[8] = glm::vec3(1,1,-1);
-	cube_points[9] = glm::vec3(1,-1,1); cube_points[10] = glm::vec3(1,1,1); cube_points[11] = glm::vec3(1,1,-1);
-
-	//top face
-	cube_points[12] = glm::vec3(-1,1,1); cube_points[13] = glm::vec3(1,1,1); cube_points[14] = glm::vec3(-1,1,-1);
-	cube_points[15] = glm::vec3(1,1,1); cube_points[16] = glm::vec3(-1,1,-1); cube_points[17] = glm::vec3(1,1,-1);
-
-	//bottom face
-	cube_points[18] = glm::vec3(-1,-1,1); cube_points[19] = glm::vec3(1,-1,1); cube_points[20] = glm::vec3(-1,-1,-1);
-	cube_points[21] = glm::vec3(1,-1,1); cube_points[22] = glm::vec3(-1,-1,-1); cube_points[23] = glm::vec3(1,-1,-1);
-
-	//front face
-	cube_points[24] = glm::vec3(-1,-1,1); cube_points[25] = glm::vec3(1,-1,1); cube_points[26] = glm::vec3(-1,1,1);
-	cube_points[27] = glm::vec3(1,-1,1); cube_points[28] = glm::vec3(-1,1,1); cube_points[29] = glm::vec3(1,1,1);
-
-	//back face
-	cube_points[30] = glm::vec3(-1,-1,-1); cube_points[31] = glm::vec3(1,-1,-1); cube_points[32] = glm::vec3(-1,1,-1);
-	cube_points[33] = glm::vec3(-1,1,-1); cube_points[34] = glm::vec3(-1,1,-1); cube_points[35] = glm::vec3(1,1,-1);
-
-	//Colors
-
-	//left face
-	cube_colors[0] = glm::vec3(1,0,0); cube_colors[1] = glm::vec3(1,0,0); cube_colors[2] = glm::vec3(1,0,0);
-	cube_colors[3] = glm::vec3(1,0,0); cube_colors[4] = glm::vec3(1,0,0); cube_colors[5] = glm::vec3(1,0,0);
-	
-	//right face
-	cube_colors[6] = glm::vec3(1,0,0); cube_colors[7] = glm::vec3(1,0,0); cube_colors[8] = glm::vec3(1,0,0);
-	cube_colors[9] = glm::vec3(1,0,0); cube_colors[10] = glm::vec3(1,0,0); cube_colors[11] = glm::vec3(1,0,0);
-
-	//top face
-	cube_colors[12] = glm::vec3(0,1,0); cube_colors[13] = glm::vec3(0,1,0); cube_colors[14] = glm::vec3(0,1,0);
-	cube_colors[15] = glm::vec3(0,1,0); cube_colors[16] = glm::vec3(0,1,0); cube_colors[17] = glm::vec3(0,1,0);
-
-	//bottom face
-	cube_colors[18] = glm::vec3(0,1,0); cube_colors[19] = glm::vec3(0,1,0); cube_colors[20] = glm::vec3(0,1,0);
-	cube_colors[21] = glm::vec3(0,1,0); cube_colors[22] = glm::vec3(0,1,0); cube_colors[23] = glm::vec3(0,1,0);
-
-	//front face
-	cube_colors[24] = glm::vec3(0,0,1); cube_colors[25] = glm::vec3(0,0,1); cube_colors[26] = glm::vec3(0,0,1);
-	cube_colors[27] = glm::vec3(0,0,1); cube_colors[28] = glm::vec3(0,0,1); cube_colors[29] = glm::vec3(0,0,1);
-
-	//back face
-	cube_colors[30] = glm::vec3(0,0,1); cube_colors[31] = glm::vec3(0,0,1); cube_colors[32] = glm::vec3(0,0,1);
-	cube_colors[33] = glm::vec3(0,0,1); cube_colors[34] = glm::vec3(0,0,1); cube_colors[35] = glm::vec3(0,0,1);
 }
 
 void initWindow()
@@ -188,11 +181,11 @@ void glEnableCapabilities()
 	glClearColor(0,0,0,1);
 }
 
-void getNewVbo(GLuint *newVbo, unsigned int bufferSize, const GLvoid* data, GLenum usage)
+void getNewVbo(GLenum target, GLuint *newVbo, unsigned int bufferSize, const GLvoid* data, GLenum usage)
 {
 	glGenBuffers(1, newVbo);
-	glBindBuffer(GL_ARRAY_BUFFER, *newVbo);
-	glBufferData(GL_ARRAY_BUFFER, bufferSize, data, usage);
+	glBindBuffer(target, *newVbo);
+	glBufferData(target, bufferSize, data, usage);
 }
 
 void getNewVao(GLuint *newVao, GLuint vbo_pos, GLuint vbo_col)
@@ -203,6 +196,18 @@ void getNewVao(GLuint *newVao, GLuint vbo_pos, GLuint vbo_col)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_col);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+}
+
+void getNewVao(GLuint *newVao, GLuint vbo_pos, GLuint vbo_col, GLuint vbo_indices)
+{
+	glGenVertexArrays(1, newVao);
+	glBindVertexArray(*newVao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_pos);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_col);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_indices);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 }
 
 void compileVertexAndFragmentShaders(GLuint *vs, GLuint *fs, const GLchar **string_vs, const GLchar **string_fs)
@@ -237,16 +242,19 @@ void displaySpheres(glm::mat4 mat_mvp, glm::mat4 mat_mv, GLuint shader_program, 
 	glUseProgram(0);
 }
 
-void displayCube(glm::mat4 mat_mvp, GLuint shader_program, GLuint vao, GLuint vbo_pos, GLuint vbo_color)
+void displayCube(glm::mat4 mat_mvp, GLuint shader_program, GLuint vao, GLuint vbo_pos, GLuint vbo_color, GLuint vbo_indices)
 {
 	glUseProgram(shader_program);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glBindVertexArray(vao);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 	glUniformMatrix4fv(glGetUniformLocation(shader_program, "MVP"), 1, false, glm::value_ptr(mat_mvp));
 
-	glDrawArrays(GL_TRIANGLES, 0, 36); //TODO : replace 36 by a variable size
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_indices);
+
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0); //TODO : replace 36 by a variable size
 	glUseProgram(0);
 }
 
@@ -255,7 +263,7 @@ void displayCube(glm::mat4 mat_mvp, GLuint shader_program, GLuint vao, GLuint vb
 **********************************************************************/
 
 GLuint vbo_spheres, vao_spheres_pos;
-GLuint vao_cube, vbo_cube_pos, vbo_cube_color;
+GLuint vao_cube, vbo_cube_pos, vbo_cube_color, vbo_cube_indices;
 GLuint vs_sphere, fs_sphere, vs_basic, fs_basic;
 
 GLuint shader_program_spheres, shader_program_basic;
@@ -283,11 +291,11 @@ int main(void)
 	//getNewVao(&vao_spheres_pos, vbo_spheres, 0);
 
 	//opengl cube buffers handling
-	getNewVbo(&vbo_cube_pos, 36 * sizeof(glm::vec3), cube_points, GL_STATIC_DRAW);
-	//getNewVbo(&vbo_cube_pos, vbo_cube, 0);
-	getNewVbo(&vbo_cube_color, 36 * sizeof(glm::vec3), cube_colors, GL_STATIC_DRAW);
+	getNewVbo(GL_ARRAY_BUFFER, &vbo_cube_pos, 8 * sizeof(glm::vec3), cube_points, GL_STATIC_DRAW);
+	getNewVbo(GL_ARRAY_BUFFER, &vbo_cube_color, 8 * sizeof(glm::vec3), cube_colors, GL_STATIC_DRAW);
+	getNewVbo(GL_ELEMENT_ARRAY_BUFFER, &vbo_cube_indices, 36 * sizeof(unsigned int), cube_indices, GL_STATIC_DRAW);
 
-	getNewVao(&vao_cube, vbo_cube_pos, vbo_cube_color);
+	getNewVao(&vao_cube, vbo_cube_pos, vbo_cube_color, vbo_cube_indices);
 	
 	//shaders handling
 	compileVertexAndFragmentShaders(&vs_sphere, &fs_sphere, &vertex_shader_spheres, &fragment_shader_spheres);
@@ -297,14 +305,14 @@ int main(void)
 
 	while(!glfwWindowShouldClose(window))
 	{
-		static float i = 1E-4f;
+		static float i = 1E-5f;
 		//step 1 : clear screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//step 2 : handle mvp matrix
 		glm::mat4 m(1.f);
-		glm::mat4 v = glm::lookAt(glm::vec3(0,0,14), glm::vec3(0,0,0), glm::vec3(0,1,0));
-		glm::mat4 p = glm::perspective(45.f,(float)width/float(height), 0.1f, 100.f);
+		glm::mat4 v = glm::lookAt(glm::vec3(0,0,10), glm::vec3(0,0,0), glm::vec3(0,1,0));
+		glm::mat4 p = glm::perspective(45.f,(float)width/float(height), 5.0f, 100.f);
 		mvp = p*v*m;
 		
 		mvp = glm::rotate(mvp, i, glm::vec3(0,1,0));
@@ -314,12 +322,12 @@ int main(void)
 		//displaySpheres(mvp, mv, shader_program_spheres, vao_spheres_pos);
 
 		//step 4 : display cube in associated shader program
-		displayCube(mvp, shader_program_basic, vao_cube, vbo_cube_pos, vbo_cube_color);
+		displayCube(mvp, shader_program_basic, vao_cube, vbo_cube_pos, vbo_cube_color, vbo_cube_indices);
 
 		//last step : read new events if some
 		glfwPollEvents();
 		glfwSwapBuffers(window);
-		i+= 1E-4f;
+		i+= 1E-5f;
 	}
 
 	glfwTerminate();
