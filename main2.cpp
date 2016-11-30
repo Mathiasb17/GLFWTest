@@ -35,7 +35,7 @@ const char* vertex_shader_spheres =
 "  vec3 posEye = vec3(MVP*vec4(vp,1));"
 "  float dist = length(posEye);"
 "  gl_PointSize = 0.1 * (pointScale/dist);"
-"  gl_Position = vec4(vp, 1.0)*MVP;"
+"  gl_Position = MVP*vec4(vp, 1.0);"
 "}";
 
 const char* fragment_shader_spheres =
@@ -66,7 +66,7 @@ const char * vertex_shader_basic =
 "out vec3 fcol;"
 "void main() {"
 "  fcol = col;"
-"  gl_Position = vec4(vp, 1.0)*MVP;"
+"  gl_Position = MVP*vec4(vp, 1.0);"
 "}";
 
 const char * fragment_shader_basic = 
@@ -311,8 +311,8 @@ int main(void)
 
 		//step 2 : handle mvp matrix
 		glm::mat4 m(1.f);
-		glm::mat4 v = glm::lookAt(glm::vec3(0,0,10), glm::vec3(0,0,0), glm::vec3(0,1,0));
-		glm::mat4 p = glm::perspective(45.f,(float)width/float(height), 5.0f, 100.f);
+		glm::mat4 v = glm::lookAt(glm::vec3(0,0,4), glm::vec3(0,0,0), glm::vec3(0,1,0));
+		glm::mat4 p = glm::perspective(45.f,(float)width/float(height), 0.1f, 100.f);
 		mvp = p*v*m;
 		
 		mvp = glm::rotate(mvp, i, glm::vec3(0,1,0));
