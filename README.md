@@ -1,8 +1,18 @@
 # GLFWTest
+
+## Description
+
+This is a sample i made to display some geometric primitives like spheres and meshes. 
+Can be useful for particle-based fluid simulation.
+Please contact me if you see any issue.
+
+## Contains :
+
 * Point sprites as spheres with OpenGL 4.
 * Cube
 * Camera
 
-pretty convenient as a starter point to display stuff with opengl.
+## Dependencies :
 
-Some OpenGL helper functions.
+* GLFW3
+* GLM
