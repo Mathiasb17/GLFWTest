@@ -307,11 +307,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 		std::cout << "bye !" << std::endl;
 	}
-
-	if(key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT))
-	{
-		std::cout << "appui sur A" << std::endl;
-	}
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
@@ -396,32 +391,37 @@ void move_camera_rotate(GLFWwindow * win, glm::mat4 *mvp)
 	*mvp = glm::rotate(*mvp, rotateAroundX, glm::vec3(1,0,0));
 }
 
-glm::vec3 getCamMove(GLFWwindow *win)
+glm::vec3 getCamMove(GLFWwindow *win, glm::vec3 camDir, glm::vec3 camUp)
 {
 	static glm::vec3 res(0,0,0);
+	
+	glm::vec3 right = glm::cross(camUp, camDir);
+
 
 	int stateA = glfwGetKey(win, GLFW_KEY_A);
 	if (stateA == GLFW_PRESS || stateA == GLFW_REPEAT)
 	{
-		res -= glm::vec3(0.0001,0,0);
+		res -= 0.0001f * right;
+		//std::cout << right.x << " " << right.y << " " << right.z << std::endl;
 	}
 
 	int stateD = glfwGetKey(win, GLFW_KEY_D);
 	if (stateD == GLFW_PRESS || stateD == GLFW_REPEAT)
 	{
-		res += glm::vec3(0.0001,0,0);
+		res += 0.0001f * right;
+		//std::cout << right.x << " " << right.y << " " << right.z << std::endl;
 	}
 
 	int stateW = glfwGetKey(win, GLFW_KEY_W);
 	if (stateW == GLFW_PRESS || stateW == GLFW_REPEAT)
 	{
-		res -= glm::vec3(0,0,0.0001);
+		res -= 0.0001f * camDir;
 	}
 
 	int stateS = glfwGetKey(win, GLFW_KEY_S);
 	if (stateS == GLFW_PRESS || stateS == GLFW_REPEAT)
 	{
-		res += glm::vec3(0,0,0.0001);
+		res += 0.0001f * camDir;
 	}
 
 
@@ -437,8 +437,6 @@ int main(void)
 	//call to helper functions
 	initWindow();
 	glfwSetKeyCallback(window, key_callback);
-	//glfwSetMouseButtonCallback(window, mouse_button_callback);
-	//glfwSetScrollCallback(window, scroll_callback);
 	glEnableCapabilities();
 	initSpheres();
 	initCube();
@@ -464,7 +462,7 @@ int main(void)
 	compileShaderProgram(&shader_program_basic, vs_basic, fs_basic);
 
 
-	glm::vec3 direction(0,0,0);
+	glm::vec3 direction(0,0,1);
 	while(!glfwWindowShouldClose(window))
 	{
 		//step 1 : clear screen
@@ -474,8 +472,10 @@ int main(void)
 
 		//step 2 : handle mvp matrix
 		glm::mat4 m(1.f);
-		glm::vec3 camMove = getCamMove(window);
-		glm::mat4 v = glm::lookAt(glm::vec3(0,0,4)+camMove, direction+camMove, glm::vec3(0,1,0));
+		glm::vec3 camMove = getCamMove(window, direction, glm::vec3(0,1,0));
+		glm::vec3 camPos = glm::vec3(0,0,4) + camMove;
+
+		glm::mat4 v = glm::lookAt(camPos, direction, glm::vec3(0,1,0));
 		glm::mat4 p = glm::perspective(fov,(float)width/float(height), 0.1f, 100.f);
 		mvp = p*v*m;
 		move_camera_rotate(window,&mvp);
