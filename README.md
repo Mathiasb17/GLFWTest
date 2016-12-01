@@ -1,6 +1,6 @@
 # GLFWTest
 
-![spheres][spheres1.png]
+![spheres](spheres1.png)
 
 ## Description
 
