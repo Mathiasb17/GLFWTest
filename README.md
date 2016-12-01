@@ -1,5 +1,7 @@
 # GLFWTest
 
+![spheres][/spheres1.png]
+
 ## Description
 
 This is a sample i made to display some geometric primitives like spheres and meshes. 
